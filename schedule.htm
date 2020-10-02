@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schedule timezone converter</title>
+    <link href="lib/jquery.datetimepicker.min.css" rel="stylesheet">
+    <link href="lib/base.css" rel="stylesheet">
+    <script src="lib/jquery-1.12.4.min.js"></script>
+    <script src="lib/jquery-ui.min.js"></script>
+    <script src="lib/jstz.min.js"></script>
+    <script src="lib/moment.min.js"></script>
+    <script src="lib/clipboard.min.js"></script>
+    <script src="lib/moment-timezone-with-data-10-year-range.min.js"></script>
+    <script src="lib/jquery.datetimepicker.full.min.js"></script>
+    <script>
+    $.datetimepicker.setDateFormatter('moment');
+    var editMode = false;
+    
+    function escapeHTML(instr) {
+        return instr.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    
+    var tz = jstz.determine().name() || 'UTC';
+    
+    function b64EncodeUnicode(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+                return String.fromCharCode('0x' + p1);
+        }));
+    }
+    
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+    
+    function updateCopyAttribute() {
+        $("#copybutton").attr("data-clipboard-text", window.location.href);
+    }
+    
+    function rebuildSlug() {
+        newSlug = b64EncodeUnicode($("#titleedit")[0].value);
+         $( ".eventitem" ).each(function( index ) {
+            var stamp = this.children[0].children[0].value;
+            var momentTime = moment.tz(stamp, 'MMMM Do YYYY, HH:mm', tz);
+            var tzTime = momentTime.tz("UTC");
+            var formattedTime = tzTime.format(); 
+            var eventTitle = this.children[1].children[0].value;
+            newSlug = newSlug + "-" + b64EncodeUnicode(formattedTime) + "-" + b64EncodeUnicode(eventTitle);
+         });
+         window.location.hash = "#" + newSlug;
+         updateCopyAttribute();
+    }
+    
+    function makeCellsEditable() {
+        if(editMode == true) {
+            return;
+        }
+        editMode = true;
+        var $title = $("#title");
+        var text = $("#title").html();
+        var $input = $('<input id="titleedit" value="' + text + '"/>');
+        $input.keyup(rebuildSlug);
+        $title.html('').append($input);
+    
+        $( ".datetime" ).each(function( index ) {
+            var $td = $(this);
+            var text = $(this).html();
+            var $input = $('<input class="datetimepicker" value="' + text + '"/>');
+            $input.change(rebuildSlug);
+            $td.html('').append($input);
+        });
+        
+        $( ".eventtitle" ).each(function( index ) {
+            var $td = $(this);
+            var text = $(this).html();
+            var $input = $('<input class="eventtitleedit" value="' + text + '"/>');
+            $input.keyup(rebuildSlug);
+            $td.html('').append($input);
+        });
+        
+        $( ".eventitem" ).each(function( index ) {
+            $(this).append('<td><span style="text-decoration: underline; cursor: pointer; padding: 2px;" onclick="delRow(this)">X</span></td>');
+        });
+        
+        $( function() {
+            $( ".datetimepicker" ).datetimepicker({
+                format:'MMMM Do YYYY, HH:mm',
+                formatTime:'HH:mm',
+                formatDate:'MMMM Do YYYY'
+            });
+        } );
+        
+        var $span = $('#tz');
+        var text = $('#tz').html();
+        var $select = $('<select id="tzselect" value="' + text + '"/>');
+        $span.html('').append($select);
+        timezones = moment.tz.names();
+        for(var i=0; i< timezones.length;i++) {
+            $('<option/>', { value: timezones[i], html: timezones[i] }).appendTo('#tzselect');
+        }
+        
+        $("#tzselect").change(function () {
+            var tzNew = this.value;
+            if(tzNew.length == 0) {
+                tzNew = tz;
+            }
+            $( ".datetime" ).each(function( index ) {
+                var stamp = this.children[0].value;
+                var momentTime = moment.tz(stamp, 'MMMM Do YYYY, HH:mm', tz);
+                var tzTime = momentTime.tz(tzNew);
+                var formattedTime = tzTime.format('MMMM Do YYYY, HH:mm'); 
+                $(this).children("input").val(formattedTime);
+            });
+            tz = tzNew;
+        });
+        $("#tzselect").val(text).change();
+        
+        $("#editbutton").attr("onclick","makeCellsSolid()");
+        $("#editbutton").html("Stop editing")
+        
+        $("#controlrow").append('<span onclick="addRow()" style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;">Add row</div>');
+        
+        updateNextUp();
+    }
+    
+    function makeCellsSolid() {
+        location.reload();
+    }
+    
+    function addRow() {
+        var momentTime = moment();
+        var tzTime = momentTime.tz(tz);
+        var formattedTime = tzTime.format('MMMM Do YYYY, HH:mm');
+        $('#date_table').append( '<tr class="eventitem"><td class="datetime"><input class="datetimepicker" value="' + formattedTime + '" onchange="rebuildSlug()"/></td><td class="eventtitle"><input class="eventtitleedit" value="" onkeyup="rebuildSlug()"/></td><td><span style="text-decoration: underline; cursor: pointer; padding: 2px;" onclick="delRow(this)">X</span></td></tr>' );
+        $( function() {
+            $( ".datetimepicker" ).datetimepicker({
+                format:'MMMM Do YYYY, HH:mm',
+                formatTime:'HH:mm',
+                formatDate:'MMMM Do YYYY'
+            });
+        } );
+        rebuildSlug();
+    }
+    
+    function delRow(ctl) {
+        $(ctl).parents("tr").remove();
+        rebuildSlug();
+    }
+    
+    function showCopy() {
+        $("#copybutton").text("Copy link to clipboard");
+    }
+    
+    function showCopied() {
+        $("#copybutton").text("Copied!");
+        setTimeout(showCopy, 2000);
+    }
+    
+    var getDatesFromSlug = function getDatesFromSlug(sParam) {
+        $("#tz").text(tz);
+        var slug = window.top.location.hash.substring(1);
+        
+        if(slug.length > 1) {
+            parts = slug.split("-");
+            $("#title").text(b64DecodeUnicode(parts[0]));
+            
+            var i;
+            var events = [];
+            for (i = 1; i < parts.length; i+=2) { 
+                var stamp = b64DecodeUnicode(parts[i]);
+                var momentTime = moment(stamp);
+                var tzTime = momentTime.tz(tz);
+                var formattedTime = tzTime.format('MMMM Do YYYY, HH:mm');
+                events.push([tzTime.unix(), formattedTime,  b64DecodeUnicode(parts[i+1])]);
+            }
+            events.sort(function(a, b){return a[0] - b[0];});
+            for (i = 0; i < events.length; i++) {
+                $('#date_table').append( '<tr class="eventitem"><td class="datetime">' + events[i][1] + '</td><td class="eventtitle">' + escapeHTML(events[i][2]) + '</td></tr>' );
+            }
+            updateNextUp();
+        }
+        else {
+            makeCellsEditable();
+        }
+        
+        clipboard = new ClipboardJS('#copybutton');
+        clipboard.on('success', showCopied)
+        updateCopyAttribute();
+        if(ClipboardJS.isSupported() == false) {
+            $("#copybutton").hide();
+        }
+    };
+    
+    function updateNextUp() {
+        var momentTime = moment();
+        var tzTime = momentTime.tz(tz);
+        $("#date_table").find("td").removeClass("nextup");
+        if(editMode == false) {
+            $( ".datetime" ).each(function( index ) {
+                var $td = $(this);
+                var stamp = $(this).html();
+                var momentTime = moment.tz(stamp, 'MMMM Do YYYY, HH:mm', tz);
+                if(momentTime.unix() > tzTime.unix()) {
+                    $(this).parents("tr").children("td").addClass("nextup");
+                    return false;
+                }
+            });
+            setTimeout(updateNextUp, 60000);
+        }
+    }
+</script>
+<style type="text/css">
+input {
+    margin-bottom: 0px;
+}
+.nextup {
+    border-top: 3px solid red;
+}
+</style>
+</head>
+<body style="margin: 20px;">
+<div style="font-size:20px; width: 93%; max-width: 800px; margin-left: auto; margin-right: auto;">
+<h1 id="title"></h1>
+<p>Times are in your local timezone, detected as <span id="tz"></span></p>
+<div>
+<table id="date_table">
+<tr><th>Time</th><th>Description</th></tr>
+</table>
+</div>
+<div id="controlrow" style="text-align: left; margin-top: 10px; vertical-align: bottom;"><span id="editbutton" onclick="makeCellsEditable()" style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;">Edit</span><span style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;" id="copybutton">Copy link to clipboard</span><span style="display:inline-block; font-size: 10px;"><a href="https://github.com/halcy/coffeedate/tree/main">github: coffeedate</a></span></div>
+<script>getDatesFromSlug()</script>
+</div>
+</body>
+</html>

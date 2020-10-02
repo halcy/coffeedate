@@ -121,7 +121,7 @@
         $("#editbutton").attr("onclick","makeCellsSolid()");
         $("#editbutton").html("Stop editing")
         
-        $("#controlrow").append('<span onclick="addRow()" style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;">Add row</div>');
+        $("#github").before('<span onclick="addRow()" style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;">Add row</div>');
         
         updateNextUp();
     }
@@ -230,7 +230,7 @@ input {
 <tr><th>Time</th><th>Description</th></tr>
 </table>
 </div>
-<div id="controlrow" style="text-align: left; margin-top: 10px; vertical-align: bottom;"><span id="editbutton" onclick="makeCellsEditable()" style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;">Edit</span><span style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;" id="copybutton">Copy link to clipboard</span><span style="display:inline-block; font-size: 10px;"><a href="https://github.com/halcy/coffeedate/tree/main">github: coffeedate</a></span></div>
+<div id="controlrow" style="text-align: left; margin-top: 10px; vertical-align: bottom;"><span id="editbutton" onclick="makeCellsEditable()" style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;">Edit</span><span style="text-decoration: underline; cursor: pointer; padding: 2px; display:inline-block; margin-right:20px;" id="copybutton">Copy link to clipboard</span><span id="github" style="display:inline-block; font-size: 10px;"><a href="https://github.com/halcy/coffeedate/tree/main">github: coffeedate</a></span></div>
 <script>getDatesFromSlug()</script>
 </div>
 </body>

@@ -4,4 +4,5 @@ Simple editable client-side only single page timezone aware schedule with "next 
 Fully client side / js only - just drop the contents of this repository anywhere on a web server and you're good to go.
 
 Screenshot:
+
 ![Screenshot of coffeedate](/screenshot.png?raw=true "Screenshot of coffeedate")

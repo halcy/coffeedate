@@ -1,0 +1,10 @@
+This program is licensed under the BSD 3-Clause license (see LICENSE).
+
+Libraries in the "lib" subdirectory are licensed under various different licenses:
+
+* jQuery / jQuery UI are licensed under the MIT license: https://jquery.org/license/
+* clipboard.js is licensed under the MIT license: https://zenorocha.mit-license.org/
+* baseCSS by ianc: https://github.com/ianc1/BaseCSS
+* jQuery datetimepicker is licensed under the MIT license: https://github.com/xdan/datetimepicker/blob/master/MIT-LICENSE.txt
+* jstz is licensed under the MIT license: https://github.com/iansinnott/jstz/blob/master/LICENCE
+* moment / moment timezone are licensed under the MIT license: https://github.com/moment/moment/blob/develop/LICENSE

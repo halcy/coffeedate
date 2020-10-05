@@ -176,6 +176,7 @@
         if(slug.length > 1) {
             parts = slug.split("-");
             $("#title").text(b64DecodeUnicode(parts[0]));
+            $(document).attr("title", escapeHTML(b64DecodeUnicode(parts[0])));
             
             var i;
             var events = [];

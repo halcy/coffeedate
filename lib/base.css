@@ -1,12 +1,23 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
-@import url('https://fonts.googleapis.com/css?family=Droid+Sans+Mono');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+/* open-sans-regular - latin */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('opensans/open-sans-v18-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Open Sans Regular'), local('OpenSans-Regular'),
+       url('opensans/open-sans-v18-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('opensans/open-sans-v18-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('opensans/open-sans-v18-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('opensans/open-sans-v18-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('opensans/open-sans-v18-latin-regular.svg#OpenSans') format('svg'); /* Legacy iOS */
+}
+
 
 body, h1, h2, h3, h4, h5, h6, section, p, pre, code, input, select, textarea, button, a, span, label {
+    font-family: 'Open Sans', sans-serif;
     margin: 0;
     padding: 0;
     border: 0;
-    font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     color: #2d3239;
     line-height: 1.42857143;
@@ -65,7 +76,7 @@ pre {
     padding: 10px 15px;
     border: 1px solid #e1e1e8;
     border-radius: 0;
-    font-family: 'Droid Sans Mono', monospace;
+    font-family: monospace;
     font-size: 14px;
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;
@@ -226,7 +237,6 @@ button::-moz-focus-inner {
     border: 0;
 }
 i.icon {
-    font-family: 'Material Icons';
     font-style: normal;
     vertical-align: bottom;
     font-feature-settings: 'liga' 1
@@ -312,7 +322,6 @@ table>tbody>tr:first-child>th {
 }
 .checkbox input[type=checkbox]:checked + span:before {
     content: '\E5CA';
-    font-family: 'Material Icons';
     font-size: 22px;
     display: block;
     position: relative;
@@ -331,7 +340,6 @@ table>tbody>tr:first-child>th {
 }
 .select:after {
     content: '\E313';
-    font-family: 'Material Icons';
     font-size: 22px;
     color: #2d3239;
     position: absolute;
